@@ -28,7 +28,7 @@ const router = createBrowserRouter([
         element: <HandBook />,
       },
       {
-        path: "/learNew",
+        path: "/learnNew",
         element: <LearnNew />,
       },
       {

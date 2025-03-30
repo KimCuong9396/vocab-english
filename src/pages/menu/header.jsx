@@ -31,7 +31,7 @@ const Header = () => {
       //disabled: true,
     },
     {
-      label: <Link to="/learNew">Học từ mới</Link>,
+      label: <Link to="/learnNew">Học từ mới</Link>,
       key: "learnNew",
       icon: (
         <img
