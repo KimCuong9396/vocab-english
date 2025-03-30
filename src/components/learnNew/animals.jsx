@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Volume2, RotateCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -20,37 +20,41 @@ const words = [
   // Thêm nhiều từ khác...
 ];
 
-const Flashcard = () => {
-  const [learnedWords, setLearnedWords] = useState([]); // Danh sách từ đã học
-  const [index, setIndex] = useState(0); // Index của từ hiện tại
-  const [isFlipped, setIsFlipped] = useState(false); // Kiểm tra trạng thái lật thẻ
+const Animals = () => {
+  const [learnedWords, setLearnedWords] = useState(() => {
+    return JSON.parse(localStorage.getItem("learnedWords")) || [];
+  });
+
+  const [index, setIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
   const navigate = useNavigate();
 
-  // Xử lý phát âm
+  useEffect(() => {
+    localStorage.setItem("learnedWords", JSON.stringify(learnedWords));
+  }, [learnedWords]);
+
   const playAudio = (word) => {
     const speech = new SpeechSynthesisUtterance(word);
     speech.lang = "en-US";
     window.speechSynthesis.speak(speech);
   };
 
-  // Chuyển sang từ tiếp theo
   const nextWord = () => {
     setIsFlipped(false);
     if (index < words.length - 1) {
       setIndex(index + 1);
     } else {
       alert("🎉 Bạn đã hoàn thành học từ vựng!");
-      navigate("/learnNew"); // Quay lại trang chính
+      navigate("/learnNew");
     }
   };
 
-  // Đánh dấu từ đã học
   const markAsLearned = () => {
-    setLearnedWords([...learnedWords, words[index].word]);
+    const newLearnedWords = [...learnedWords, words[index]];
+    setLearnedWords(newLearnedWords);
     nextWord();
   };
 
-  // Nếu danh sách từ đã học hết, hiện thông báo hoàn thành
   if (learnedWords.length === words.length) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -89,7 +93,6 @@ const Flashcard = () => {
         )}
       </div>
 
-      {/* Nút điều khiển */}
       <div className="mt-4 flex space-x-4">
         <button
           onClick={() => playAudio(words[index].word)}
@@ -105,7 +108,6 @@ const Flashcard = () => {
         </button>
       </div>
 
-      {/* Nút tiếp tục */}
       <button
         onClick={nextWord}
         className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg"
@@ -113,7 +115,6 @@ const Flashcard = () => {
         Tiếp tục
       </button>
 
-      {/* Nút đánh dấu đã thuộc */}
       <button
         onClick={markAsLearned}
         className="mt-2 px-6 py-2 bg-green-500 text-white rounded-lg"
@@ -124,4 +125,4 @@ const Flashcard = () => {
   );
 };
 
-export default Flashcard;
+export default Animals;

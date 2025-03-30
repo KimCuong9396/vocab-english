@@ -45,7 +45,7 @@ const Header = () => {
       key: "handbook",
       icon: (
         <img
-          src="https://cbx-prod.b-cdn.net/COLOURBOX63786521.jpg?width=1200&height=1200&quality=70"
+          src="https://cf.shopee.vn/file/1aa1d1fe5ad58d98de5d025b36aecb8d"
           style={{ width: 20 }}
         />
       ),
