@@ -9,6 +9,8 @@ import Revise from "./pages/revise.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import FlashCard from "./components/FlashCard.jsx";
 import Home from "./pages/home.jsx";
+import Animals from "./components/learnNew/animals.jsx";
+import Sports from "./components/learnNew/sports.jsx";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,14 @@ const router = createBrowserRouter([
         element: <Revise />,
       },
     ],
+  },
+  {
+    path: "/learnNew/Animals",
+    element: <Animals />,
+  },
+  {
+    path: "/learnNew/Sports",
+    element: <Sports />,
   },
   // {
   //   path: "/register",

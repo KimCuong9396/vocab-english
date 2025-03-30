@@ -1,5 +1,6 @@
 import React from "react";
 import { List, Card } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const topics = [
   { title: "Animals", image: "https://source.unsplash.com/100x100/?animals" },
@@ -19,18 +20,26 @@ const topics = [
 ];
 
 const TopicList = () => {
+  const navigate = useNavigate();
+  // Hàm xử lý khi click vào một card
+  const handleTopicClick = (topic) => {
+    console.log("Clicked on topic:", topic.title);
+    navigate(`/learnNew/${topic.title}`);
+  };
+
   return (
-    <div className="flex justify-center items-center min-h-screen ">
+    <div className="flex justify-center items-center min-h-screen">
       <div className="w-full max-w-2xl">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          📚 Chủ đề tiếng Anh
-        </h2>
+        <h1 className="text-blue p-3 text-2xl">📚 Topic</h1>
         <List
           itemLayout="horizontal"
           dataSource={topics}
           renderItem={(item) => (
             <List.Item className="flex justify-center">
-              <Card className="w-full p-4 flex items-center shadow-md rounded-lg bg-white border border-gray-300">
+              <Card
+                className="w-full p-4 flex items-center shadow-md rounded-lg bg-white border border-gray-300 cursor-pointer hover:shadow-lg transition duration-300"
+                onClick={() => handleTopicClick(item)} // Gắn sự kiện onClick
+              >
                 <img
                   alt={item.title}
                   src={item.image}
