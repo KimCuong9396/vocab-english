@@ -2,36 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Volume2, RotateCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const words = [
-  {
-    word: "Elephant",
-    meaning: "Con voi",
-    image: "https://source.unsplash.com/200x200/?elephant",
-    pronunciation: "/ˈɛl.ɪ.fənt/",
-    example: "The elephant is the largest land animal.",
-  },
-  {
-    word: "Tiger",
-    meaning: "Con hổ",
-    image: "https://source.unsplash.com/200x200/?tiger",
-    pronunciation: "/ˈtaɪ.ɡɚ/",
-    example: "The tiger is a strong predator.",
-  },
-  // Thêm nhiều từ khác...
-];
+const API_URL = "http://localhost:3007/api/words";
+const LEARNED_API_URL = "http://localhost:3007/api/words";
 
 const Animals = () => {
-  const [learnedWords, setLearnedWords] = useState(() => {
-    return JSON.parse(localStorage.getItem("learnedWords")) || [];
-  });
-
+  const [words, setWords] = useState([]);
   const [index, setIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem("learnedWords", JSON.stringify(learnedWords));
-  }, [learnedWords]);
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) => setWords(data))
+      .catch((err) => console.error("Lỗi tải dữ liệu", err));
+  }, []);
 
   const playAudio = (word) => {
     const speech = new SpeechSynthesisUtterance(word);
@@ -50,25 +35,17 @@ const Animals = () => {
   };
 
   const markAsLearned = () => {
-    const newLearnedWords = [...learnedWords, words[index]];
-    setLearnedWords(newLearnedWords);
-    nextWord();
+    fetch(LEARNED_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(words[index]),
+    })
+      .then(() => nextWord())
+      .catch((err) => console.error("Lỗi lưu từ đã học", err));
   };
 
-  if (learnedWords.length === words.length) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold">
-          🎉 Hoàn thành! Bạn đã học hết từ!
-        </h1>
-        <button
-          onClick={() => navigate("/learnNew")}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
-        >
-          Quay lại học từ mới
-        </button>
-      </div>
-    );
+  if (!words.length) {
+    return <h2 className="text-center mt-10">⏳ Đang tải từ vựng...</h2>;
   }
 
   return (

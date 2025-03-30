@@ -1,96 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { Volume2, RotateCw } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
+const LEARNED_API_URL = "http://localhost:3007/api/words";
 
 const Revise = () => {
   const [learnedWords, setLearnedWords] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedWords = JSON.parse(localStorage.getItem("learnedWords")) || [];
-    setLearnedWords(storedWords);
+    fetch(LEARNED_API_URL)
+      .then((res) => res.json())
+      .then((data) => setLearnedWords(data))
+      .catch((err) => console.error("Lỗi tải từ đã học", err));
   }, []);
 
-  const playAudio = (word) => {
-    const speech = new SpeechSynthesisUtterance(word);
-    speech.lang = "en-US";
-    window.speechSynthesis.speak(speech);
-  };
-
-  const nextWord = () => {
-    setIsFlipped(false);
-    if (index < learnedWords.length - 1) {
-      setIndex(index + 1);
-    } else {
-      alert("🎉 Bạn đã ôn tập hết từ vựng!");
-      navigate("/learnNew");
-    }
-  };
-
-  if (learnedWords.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold">📖 Chưa có từ để ôn tập</h1>
-        <p className="text-gray-500">Hãy học từ mới trước khi ôn tập!</p>
-        <button
-          onClick={() => navigate("/learnNew")}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
-        >
-          Quay lại học từ mới
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-2xl font-bold mb-4">📖 Ôn tập từ đã học</h1>
-
-      <div
-        className="w-80 h-48 bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col items-center justify-center p-4 cursor-pointer"
-        onClick={() => setIsFlipped(!isFlipped)}
-      >
-        {isFlipped ? (
-          <p className="text-lg">{learnedWords[index].example}</p>
-        ) : (
-          <>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">📚 Danh sách từ đã học</h1>
+      <ul className="grid grid-cols-2 gap-4">
+        {learnedWords.map((word) => (
+          <li key={word._id} className="border p-4 rounded-lg shadow">
             <img
-              src={learnedWords[index].image}
-              alt={learnedWords[index].word}
-              className="w-24 h-24 rounded-md"
+              src={word.image}
+              alt={word.word}
+              className="w-16 h-16 mx-auto rounded"
             />
-            <h2 className="text-xl font-bold mt-2">
-              {learnedWords[index].word}
-            </h2>
-            <p className="text-gray-500">{learnedWords[index].pronunciation}</p>
-            <p className="text-green-500">{learnedWords[index].meaning}</p>
-          </>
-        )}
-      </div>
-
-      <div className="mt-4 flex space-x-4">
-        <button
-          onClick={() => playAudio(learnedWords[index].word)}
-          className="px-3 py-2 bg-gray-200 rounded-lg"
-        >
-          <Volume2 />
-        </button>
-        <button
-          onClick={() => setIsFlipped(!isFlipped)}
-          className="px-3 py-2 bg-gray-200 rounded-lg"
-        >
-          <RotateCw />
-        </button>
-      </div>
-
-      <button
-        onClick={nextWord}
-        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg"
-      >
-        Tiếp tục
-      </button>
+            <h2 className="text-lg font-bold mt-2">{word.word}</h2>
+            <p className="text-gray-500">{word.pronunciation}</p>
+            <p className="text-green-500">{word.meaning}</p>
+            <p className="text-sm mt-2">{word.example}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
