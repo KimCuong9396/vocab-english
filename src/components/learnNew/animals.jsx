@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../services/axios.customize";
-import { Volume2, RotateCw } from "lucide-react";
+import { Volume2, RotateCw, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = "/api/words";
-//const LEARNED_API_URL = "/api/words";
 const Animals = () => {
   const [words, setWords] = useState([]);
   const [index, setIndex] = useState(0);
@@ -13,39 +11,49 @@ const Animals = () => {
 
   useEffect(() => {
     axios
-      .get(BACKEND_URL)
+      .get("/api/words")
       .then((res) => setWords(res.data))
       .catch((err) => console.error("Lỗi tải dữ liệu", err));
   }, []);
 
   const playAudio = (word) => {
+    if (!word) return;
     const speech = new SpeechSynthesisUtterance(word);
     speech.lang = "en-US";
     window.speechSynthesis.speak(speech);
   };
 
+  const saveWord = () => {
+    if (!words[index]) return;
+    const token = localStorage.getItem("token");
+
+    axios
+      .post(
+        "/api/progress/update",
+        { word: words[index].word },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .catch((err) => console.error("Lỗi lưu từ đã học", err));
+  };
+
   const nextWord = () => {
+    saveWord(); // Lưu từ vựng trước khi chuyển sang từ mới
     setIsFlipped(false);
     if (index < words.length - 1) {
       setIndex(index + 1);
     } else {
       alert("🎉 Bạn đã hoàn thành học từ vựng!");
-      navigate("/learnNew");
+      navigate("/revise");
     }
-  };
-
-  const markAsLearned = () => {
-    axios
-      .post(BACKEND_URL, words[index], {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then(() => nextWord())
-      .catch((err) => console.error("Lỗi lưu từ đã học", err));
   };
 
   if (!words.length) {
     return <h2 className="text-center mt-10">⏳ Đang tải từ vựng...</h2>;
   }
+
+  const currentWord = words[index];
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -54,24 +62,26 @@ const Animals = () => {
         onClick={() => setIsFlipped(!isFlipped)}
       >
         {isFlipped ? (
-          <p className="text-lg">{words[index].example}</p>
+          <p className="text-lg">{currentWord.example}</p>
         ) : (
           <>
-            <img
-              src={words[index].image}
-              alt={words[index].word}
-              className="w-40 h-40 rounded-md"
-            />
-            <h2 className="text-xl font-bold mt-2">{words[index].word}</h2>
-            <p className="text-gray-500">{words[index].pronunciation}</p>
-            <p className="text-green-500">{words[index].meaning}</p>
+            {currentWord.image && (
+              <img
+                src={currentWord.image}
+                alt={currentWord.word}
+                className="w-40 h-40 rounded-md"
+              />
+            )}
+            <h2 className="text-xl font-bold mt-2">{currentWord.word}</h2>
+            <p className="text-gray-500">{currentWord.pronunciation}</p>
+            <p className="text-green-500">{currentWord.meaning}</p>
           </>
         )}
       </div>
 
       <div className="mt-4 flex space-x-4">
         <button
-          onClick={() => playAudio(words[index].word)}
+          onClick={() => playAudio(currentWord.word)}
           className="px-3 py-2 bg-gray-200 rounded-lg"
         >
           <Volume2 />
@@ -84,19 +94,14 @@ const Animals = () => {
         </button>
       </div>
 
-      <button
-        onClick={nextWord}
-        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg"
-      >
-        Tiếp tục
-      </button>
-
-      <button
-        onClick={markAsLearned}
-        className="mt-2 px-6 py-2 bg-green-500 text-white rounded-lg"
-      >
-        Mình đã thuộc từ này
-      </button>
+      <div className="mt-4">
+        <button
+          onClick={nextWord}
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg flex items-center"
+        >
+          Tiếp tục <ArrowRight className="ml-2" />
+        </button>
+      </div>
     </div>
   );
 };

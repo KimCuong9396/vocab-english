@@ -1,32 +1,31 @@
-import React, { useState, useEffect } from "react";
-
-const LEARNED_API_URL = "http://localhost:3007/api/words";
+import React, { useEffect, useState } from "react";
+import axios from "../services/axios.customize";
 
 const Revise = () => {
-  const [learnedWords, setLearnedWords] = useState([]);
+  const [words, setWords] = useState([]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetch(LEARNED_API_URL)
-      .then((res) => res.json())
-      .then((data) => setLearnedWords(data))
-      .catch((err) => console.error("Lỗi tải từ đã học", err));
-  }, []);
+    if (!token) {
+      alert("Bạn cần đăng nhập để xem từ vựng đã học!");
+      return;
+    }
+
+    axios
+      .get("/api/progress/update", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setWords(res.data))
+      .catch((err) => console.error("Lỗi tải danh sách từ vựng", err));
+  }, [token]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">📚 Danh sách từ đã học</h1>
-      <ul className="grid grid-cols-2 gap-4">
-        {learnedWords.map((word) => (
-          <li key={word._id} className="border p-4 rounded-lg shadow">
-            <img
-              src={word.image}
-              alt={word.word}
-              className="w-16 h-16 mx-auto rounded"
-            />
-            <h2 className="text-lg font-bold mt-2">{word.word}</h2>
-            <p className="text-gray-500">{word.pronunciation}</p>
-            <p className="text-green-500">{word.meaning}</p>
-            <p className="text-sm mt-2">{word.example}</p>
+    <div className="p-5">
+      <h2 className="text-xl font-bold mb-4">📚 Danh sách từ đã học</h2>
+      <ul>
+        {words.map((word, index) => (
+          <li key={index} className="p-2 border rounded">
+            {word.word}
           </li>
         ))}
       </ul>
