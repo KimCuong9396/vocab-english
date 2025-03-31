@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
+import axios from "../../services/axios.customize";
 import { Volume2, RotateCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:3007/api/words";
-const LEARNED_API_URL = "http://localhost:3007/api/words";
-
+const BACKEND_URL = "/api/words";
+//const LEARNED_API_URL = "/api/words";
 const Animals = () => {
   const [words, setWords] = useState([]);
   const [index, setIndex] = useState(0);
@@ -12,9 +12,9 @@ const Animals = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => setWords(data))
+    axios
+      .get(BACKEND_URL)
+      .then((res) => setWords(res.data))
       .catch((err) => console.error("Lỗi tải dữ liệu", err));
   }, []);
 
@@ -35,11 +35,10 @@ const Animals = () => {
   };
 
   const markAsLearned = () => {
-    fetch(LEARNED_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(words[index]),
-    })
+    axios
+      .post(BACKEND_URL, words[index], {
+        headers: { "Content-Type": "application/json" },
+      })
       .then(() => nextWord())
       .catch((err) => console.error("Lỗi lưu từ đã học", err));
   };
@@ -61,7 +60,7 @@ const Animals = () => {
             <img
               src={words[index].image}
               alt={words[index].word}
-              className="w-24 h-24 rounded-md"
+              className="w-40 h-40 rounded-md"
             />
             <h2 className="text-xl font-bold mt-2">{words[index].word}</h2>
             <p className="text-gray-500">{words[index].pronunciation}</p>

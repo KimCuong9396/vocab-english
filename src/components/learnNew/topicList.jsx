@@ -3,8 +3,16 @@ import { List, Card } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const topics = [
-  { title: "Animals", image: "https://source.unsplash.com/100x100/?animals" },
-  { title: "Food & Drink", image: "https://source.unsplash.com/100x100/?food" },
+  {
+    title: "Animals",
+    image:
+      "https://www.freevector.com/uploads/vector/preview/30512/Animal_Icon.jpg",
+  },
+  {
+    title: "Food & Drink",
+    image:
+      "https://www.freevector.com/uploads/vector/preview/75320/vecteezySeamlessBreakfastSeamlessBackground4fa0522_generated.jpg",
+  },
   { title: "Sports", image: "https://source.unsplash.com/100x100/?sports" },
   { title: "Travel", image: "https://source.unsplash.com/100x100/?travel" },
   {
@@ -43,7 +51,7 @@ const TopicList = () => {
                 <img
                   alt={item.title}
                   src={item.image}
-                  className="w-20 h-20 rounded-lg object-cover mr-6"
+                  className="w-32 h-32 rounded-full object-cover"
                 />
                 <span className="text-xl font-semibold">{item.title}</span>
               </Card>

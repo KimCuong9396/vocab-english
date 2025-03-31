@@ -11,6 +11,8 @@ import FlashCard from "./components/FlashCard.jsx";
 import Home from "./pages/home.jsx";
 import Animals from "./components/learnNew/animals.jsx";
 import Sports from "./components/learnNew/sports.jsx";
+import Register from "./pages/register.jsx";
+import Login from "./pages/login.jsx";
 
 const router = createBrowserRouter([
   {
@@ -45,14 +47,14 @@ const router = createBrowserRouter([
     path: "/learnNew/Sports",
     element: <Sports />,
   },
-  // {
-  //   path: "/register",
-  //   element: <RegisterPage />,
-  // },
-  // {
-  //   path: "/login",
-  //   element: <LoginPage />,
-  // },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
