@@ -22,31 +22,31 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
+    // Kiểm tra mật khẩu trùng khớp
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Mật khẩu nhập lại không khớp");
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
     try {
       setLoading(true);
       setError("");
-      const URL_BACKEND = "/api/auth/register";
-      const response = await axios.post(URL_BACKEND, {
+      const response = await axios.post("/api/auth/register", {
         username,
         email,
         password,
       });
 
+      // Lưu token vào localStorage và điều hướng về trang đăng nhập
       localStorage.setItem("token", response.data.token);
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || "Đăng ký thất bại");
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const Register = () => {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Tạo tài khoản</h2>
 
       {error && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>
@@ -63,7 +63,7 @@ const Register = () => {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="username">
-            Username
+            Tên đăng nhập
           </label>
           <input
             type="text"
@@ -93,7 +93,7 @@ const Register = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="password">
-            Password
+            Mật khẩu
           </label>
           <input
             type="password"
@@ -108,7 +108,7 @@ const Register = () => {
 
         <div className="mb-6">
           <label className="block text-gray-700 mb-2" htmlFor="confirmPassword">
-            Confirm Password
+            Nhập lại mật khẩu
           </label>
           <input
             type="password"
@@ -124,16 +124,20 @@ const Register = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:bg-blue-300"
+          className={`w-full py-2 px-4 rounded text-white focus:outline-none ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
         >
-          {loading ? "Creating Account..." : "Register"}
+          {loading ? "Đang tạo tài khoản..." : "Đăng ký"}
         </button>
       </form>
 
       <div className="mt-4 text-center">
-        Already have an account?{" "}
+        Đã có tài khoản?{" "}
         <Link to="/login" className="text-blue-500 hover:text-blue-700">
-          Sign In
+          Đăng nhập
         </Link>
       </div>
     </div>
