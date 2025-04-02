@@ -13,7 +13,7 @@ import Animals from "./components/learnNew/animals.jsx";
 import Sports from "./components/learnNew/sports.jsx";
 import Register from "./pages/register.jsx";
 import Login from "./pages/login.jsx";
-import { UserProvider } from "./components/context/UserContext.jsx";
+import { AuthWrapper } from "./components/context/UserContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -58,9 +58,9 @@ const router = createBrowserRouter([
   },
 ]);
 createRoot(document.getElementById("root")).render(
-  <UserProvider>
+  <AuthWrapper>
     <StrictMode>
       <RouterProvider router={router} />
     </StrictMode>
-  </UserProvider>
+  </AuthWrapper>
 );

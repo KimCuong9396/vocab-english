@@ -1,23 +1,37 @@
-import { SettingOutlined } from "@ant-design/icons";
+import {
+  AliwangwangOutlined,
+  LoginOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 import { Menu } from "antd";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useUser } from "../../components/context/UserContext";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../components/context/UserContext";
 import conversationIcon from "./icon/conversation.png";
 import reviseIcon from "./icon/revise.png";
 import handBookIcon from "./icon/handBook.png";
 import learnNewIcon from "./icon/learnNew.png";
 
 const Header = () => {
-  const [current, setCurrent] = useState("mail");
-  const { username } = useUser(); // Lấy username từ Context
-
+  const navigate = useNavigate();
+  const [current, setCurrent] = useState("home");
+  const { user, setUser } = useContext(AuthContext);
+  const handleLogout = async () => {
+    localStorage.removeItem("token");
+    setUser({
+      username: "",
+      id: "",
+    });
+    message.success("Logout thành công.");
+    //redirect to home
+    navigate("/");
+  };
   const onClick = (e) => {
     setCurrent(e.key);
   };
 
   const items = [
-    { label: <Link to="/">Rabbit Vocab</Link>, key: "vocab" },
+    { label: <Link to="/">Rabbit Vocab</Link>, key: "home" },
     {
       label: <Link to="/revise">Ôn tập</Link>,
       key: "revise",
@@ -38,14 +52,46 @@ const Header = () => {
       key: "conversation",
       icon: <img src={conversationIcon} style={{ width: 50 }} />,
     },
-    {
-      label: username ? `Xin chào, ${username}` : "Người dùng",
-      key: "SubMenu",
-      icon: <SettingOutlined />,
-      children: [
-        { type: "group", children: [{ label: "Đăng xuất", key: "logout" }] },
-      ],
-    },
+    // {
+    //   label: user.username ? `Xin chào, ${user.username}` : "Người dùng",
+    //   key: "SubMenu",
+    //   icon: <SettingOutlined />,
+    //   children: [
+    //     { type: "group", children: [{ label: "Đăng xuất", key: "logout" }] },
+    //   ],
+    // },
+    ...(!user.id
+      ? [
+          {
+            label: <Link to={"/login"}>Đăng nhập</Link>,
+            key: "login",
+            icon: <LoginOutlined />,
+          },
+        ]
+      : []),
+    ...(user.id
+      ? [
+          {
+            label: `Welcome ${user.username}`,
+            key: "welcome",
+            icon: <AliwangwangOutlined />,
+            children: [
+              {
+                label: (
+                  <span
+                    onClick={() => {
+                      handleLogout();
+                    }}
+                  >
+                    Đăng xuất
+                  </span>
+                ),
+                key: "logout",
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   return (

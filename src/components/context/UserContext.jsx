@@ -1,17 +1,15 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState } from "react";
 
-const UserContext = createContext();
+export const AuthContext = createContext({
+  username: "",
+  id: "",
+});
 
-export const UserProvider = ({ children }) => {
-  const [username, setUsername] = useState(
-    localStorage.getItem("username") || ""
-  );
-
+export const AuthWrapper = (props) => {
+  const [user, setUser] = useState({ username: "", id: "" });
   return (
-    <UserContext.Provider value={{ username, setUsername }}>
-      {children}
-    </UserContext.Provider>
+    <AuthContext.Provider value={{ user, setUser }}>
+      {props.children}
+    </AuthContext.Provider>
   );
 };
-
-export const useUser = () => useContext(UserContext);
