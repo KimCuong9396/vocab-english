@@ -14,11 +14,11 @@ import learnNewIcon from "./icon/learnNew.png";
 
 const Header = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Thêm useLocation để lấy URL hiện tại
+  const location = useLocation();
   const [current, setCurrent] = useState("home");
   const { user, setUser } = useContext(AuthContext);
 
-  // Cập nhật current dựa trên URL khi component mount hoặc URL thay đổi
+  // Cập nhật current dựa trên URL
   useEffect(() => {
     const path = location.pathname;
     const keyMap = {
@@ -29,10 +29,10 @@ const Header = () => {
       "/conversation": "conversation",
       "/login": "login",
     };
-    setCurrent(keyMap[path] || "home"); // Nếu không khớp thì mặc định là "home"
+    setCurrent(keyMap[path] || "home");
   }, [location.pathname]);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     localStorage.removeItem("token");
     setUser({
       username: "",
@@ -45,6 +45,8 @@ const Header = () => {
   const onClick = (e) => {
     setCurrent(e.key);
   };
+
+  console.log("Header - check user in render:", user);
 
   const items = [
     { label: <Link to="/">Rabbit Vocab</Link>, key: "home" },
