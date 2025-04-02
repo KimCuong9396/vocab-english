@@ -4,8 +4,8 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
-import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../components/context/UserContext";
 import conversationIcon from "./icon/conversation.png";
 import reviseIcon from "./icon/revise.png";
@@ -14,8 +14,24 @@ import learnNewIcon from "./icon/learnNew.png";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Thêm useLocation để lấy URL hiện tại
   const [current, setCurrent] = useState("home");
   const { user, setUser } = useContext(AuthContext);
+
+  // Cập nhật current dựa trên URL khi component mount hoặc URL thay đổi
+  useEffect(() => {
+    const path = location.pathname;
+    const keyMap = {
+      "/": "home",
+      "/revise": "revise",
+      "/learnNew": "learnNew",
+      "/handBook": "handbook",
+      "/conversation": "conversation",
+      "/login": "login",
+    };
+    setCurrent(keyMap[path] || "home"); // Nếu không khớp thì mặc định là "home"
+  }, [location.pathname]);
+
   const handleLogout = async () => {
     localStorage.removeItem("token");
     setUser({
@@ -23,9 +39,9 @@ const Header = () => {
       id: "",
     });
     message.success("Logout thành công.");
-    //redirect to home
     navigate("/");
   };
+
   const onClick = (e) => {
     setCurrent(e.key);
   };
@@ -52,14 +68,6 @@ const Header = () => {
       key: "conversation",
       icon: <img src={conversationIcon} style={{ width: 50 }} />,
     },
-    // {
-    //   label: user.username ? `Xin chào, ${user.username}` : "Người dùng",
-    //   key: "SubMenu",
-    //   icon: <SettingOutlined />,
-    //   children: [
-    //     { type: "group", children: [{ label: "Đăng xuất", key: "logout" }] },
-    //   ],
-    // },
     ...(!user.id
       ? [
           {
